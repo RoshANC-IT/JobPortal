@@ -1,0 +1,128 @@
+/*
+In the context of Multer, the req, file, and cb arguments are part of the callback function 
+
+passed to the fileFilter function (or other functions like destination or filename) that are used for 
+processing the file upload.
+
+Here's what each parameter means:
+
+1. req (Request Object)
+Type: Express Request object
+Description: This is the standard Express request object, which contains details about the HTTP request. 
+It includes properties such as req.body, req.headers, req.query, and req.files (after the file is uploaded).
+In the context of Multer: req allows you to access any additional data sent with the form, such as fields 
+other than the file(s), and can be used to inspect the request or modify the behavior of file handling.
+2. file (The File Object)
+Type: File object
+
+Description: This is the file being uploaded by the user. It contains information about the uploaded file, 
+such as:
+
+file.fieldname: The name of the field in the form that uploaded the file (i.e., the name attribute of the 
+input field).
+file.originalname: The original name of the file (including the extension).
+file.encoding: The file encoding type.
+file.mimetype: The MIME type of the file (e.g., image/jpeg, application/pdf).
+file.size: The size of the file in bytes.
+file.buffer (if memoryStorage is used): The buffer of the uploaded file when it's stored in memory. 
+3. cb (Callback Function)
+Type: Function (error, value)
+
+Description: The callback function cb is used to tell Multer whether to accept or reject the file, and, if 
+accepted, where to store the file and what name to give it. You will call cb to either:
+
+Accept the file: By calling cb(null, value), where value is typically the location or filename where the 
+file will be stored.
+Reject the file: By calling cb(error), where error is an instance of Error indicating the problem (e.g., 
+if the file is too large or of an unsupported type).
+The callback allows you to control how Multer handles the file upload and any validation or processing 
+that needs to occur before the file is saved.
+
+-------------------------------------------------------------------------- timestamps 
+
+If you set { timestamps: false } in a Mongoose schema, the automatic creation of createdAt and updatedAt 
+fields will not happen. This means Mongoose will not add or update these fields for you when documents are 
+created or modified. Automatic Creation of createdAt and updatedAt Fields
+-By setting { timestamps: true }, Mongoose automatically handles the creation and updates of two special fields:
+-createdAt: The timestamp of when the document is first created.
+-updatedAt: The timestamp of when the document was last updated.
+  
+
+
+This imports the jsonwebtoken package, which is used to sign, verify, and decode JSON Web Tokens (JWT).
+jwt.verify() is used to validate the token, ensuring it is valid and hasn't expired.
+
+
+
+---------------------------------------------------------------- Optional chaining
+The ? in your code is part of optional chaining in JavaScript. 
+Optional chaining is a feature that allows you to safely access deeply nested properties of an object, 
+even if some intermediate properties might be null or undefined.
+purpose of the ?. is to safely attempt to access 
+Why is ?. Useful?
+-Safety: It prevents runtime errors when trying to access properties on null or undefined. Without 
+optional chaining, accessing req.headers['authorization'] when it's undefined would throw an error. 
+
+Optional chaining allows for more concise and safer code.
+-Readability: Optional chaining reduces the need for additional checks like if statements or && 
+operators, making the code cleaner and easier to read.
+
+-------------------------------------------------------- Multer 
+Multer is a middleware for handling multipart/form-data in Node.js, primarily used for handling 
+file uploads. It's typically used with Express.js to handle file uploads from HTTP requests.
+
+Key Features of Multer:
+-File Handling: Multer helps handle file uploads, including:
+
+-Storing files on the server
+-Setting file size limits
+-Handling multiple file uploads simultaneously
+-Renaming files on upload
+-Stream-Based: Multer processes files in streams, 
+meaning it doesn’t store the entire file in memory, 
+which helps with large file uploads by preventing memory overload.
+
+Storage Engines: Multer allows you to configure storage options, including:
+-DiskStorage: Saves files to a specified location on the disk.
+-MemoryStorage: Stores files in memory (RAM), which is useful for temporary file storage.
+
+
+                                                                                                -------------------> Job.controller --------------------------------
+---------------------------------------------------------------------
+const keyword = req.query.keyword || ""; // Get search keyword from query
+    const query = {
+      $or: [
+        { title: { $regex: keyword, $options: "i" } },
+        { description: { $regex: keyword, $options: "i" } },
+       // {salary :{ $regex: keyword, $options: "i" }}
+      ],
+    };
+Explanation:
+This part of the code constructs a MongoDB query object that will be used to search the Job collection 
+for documents that match the keyword either in the title or description field.
+
+--------------> "$" this is used to denote the operator in MongoDb ex or => $or , and =>$and like this 
+
+$or: This is a logical operator in MongoDB that allows you to specify multiple conditions, and the query 
+will match any documents where at least one of the conditions is true. In this case, the condition is either 
+matching the title or matching the description.
+
+{ title: { $regex: keyword, $options: "i" } }: This specifies that the title field should be searched 
+using a regular expression that matches the keyword. The $options: "i" part makes the search case-insensitive, 
+meaning it will match the keyword regardless of 
+whether the letters in the title are upper or lower case.
+
+{ description: { $regex: keyword, $options: "i" } }: Similarly, this specifies that the description 
+field should also be searched using the regular expression. The behavior is the same as for the title field — 
+it will perform a case-insensitive match.
+
+Example:
+If the keyword is "developer", the query would find any job documents where:
+
+The title contains "developer" (case-insensitive).
+Or the description contains "developer" (case-insensitive).
+So, for example, it could match:
+
+Title: "Web Developer"
+Description: "Looking for a skilled developer"
+*/

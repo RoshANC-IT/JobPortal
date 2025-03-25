@@ -1,0 +1,24 @@
+/*
+
+
+Key Points:
+Backend: Sends data (e.g., list of applied jobs) as a response to the GET request.
+Custom Hook: Fetches this data and dispatches it to Redux.
+Redux Store: Holds the data in its state (e.g., applications), which is then available globally in the app.
+React Components: React components (like Profile) access the Redux store using useSelector and re-render with the latest data.
+In this setup:
+
+The custom hook is the middleman: it fetches from the backend and dispatches to Redux to manage state, which React components consume.
+Final Picture:
+
+Frontend (React) → Custom Hook → Backend (API) → Custom Hook → React-Redux → React Components (UI) 
+
+
+
+
+
+
+
+
+
+*/

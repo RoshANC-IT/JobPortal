@@ -1,0 +1,236 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
+import USER_API_ENDPOINT from "@/utils/constants";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom"; // Corrected navigate import
+export default function SignUp() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [input, setInput] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    role: "",
+    file: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  // const navigate = useNavigate(); // Hook for navigation
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true); // Disable button during submission
+
+    if (!input.fullname || !input.email || !input.password || !input.phoneNumber || !input.role) {
+      toast.error("Please fill in all the required fields.");
+      setIsSubmitting(false); // Enable button after validation
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(input.email)) {
+      toast.error("Please enter a valid email address.");
+      setIsSubmitting(false); // Enable button after validation
+      return;
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(input.phoneNumber)) {
+      toast.error("Please enter a valid phone number.");
+      setIsSubmitting(false); // Enable button after validation
+      return;
+    }
+    const formData = new FormData();
+    formData.append("FullName", input.fullname);
+    formData.append("email", input.email);
+    formData.append("password", input.password);
+    formData.append("phoneNumber", input.phoneNumber);
+    formData.append("role", input.role);
+
+    if (input.file) {
+      formData.append("file", input.file);
+    }
+
+    try {
+      const response = await axios.post(`${USER_API_ENDPOINT}/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        navigate("/login");
+      } else {
+        toast.error(response.data.message || "Registration failed.");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error(e?.response?.data?.message || "An error occurred during registration.");
+    } finally {
+      setIsSubmitting(false); // Re-enable button
+    }
+  };
+
+  const handleChange = (e) => {
+    setInput({ ...input, [e.target.name]: e.target.value });
+  };
+
+  const handleFile = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Only image files are allowed.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB.");
+        return;
+      }
+      setInput({ ...input, file });
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center max-w-7xl mx-auto gap-2">
+      <form
+        // onSubmit={handleSubmit}
+        className="w-1/2 border-2 border-gray-200 rounded p-4 my-10"
+      >
+        <h1 className="font-bold text-xl mb-5 text-center text-[#1D4ED8]">
+          Sign Up
+        </h1>
+
+        {/* Full Name */}
+        <div className="my-2">
+          <Label>Full Name</Label>
+          <Input
+            // onChange={handleChange}
+            type="text"
+            // value={input.fullname}
+            name="fullname"
+            placeholder="Enter Your Name"
+            required
+          />
+        </div>
+
+        {/* Email */}
+        <div className="my-2">
+          <Label>Email</Label>
+          <Input
+            // onChange={handleChange}
+            type="email"
+            // value={input.email}
+            name="email"
+            placeholder="example@gmail.com"
+            required
+          />
+        </div>
+
+        {/* Phone */}
+        <div className="my-2">
+          <Label>Phone Number</Label>
+          <Input
+            // onChange={handleChange}
+            type="tel"
+            // value={input.phoneNumber}
+            name="phoneNumber"
+            placeholder="9420111111"
+            required
+          />
+        </div>
+
+        {/* Password */}
+        <div className="my-2 relative">
+          <Label>Password</Label>
+          <Input
+            // type={showPassword ? "text" : "password"}
+            // value={input.password}
+            name="password"
+            // onChange={handleChange}
+            placeholder="Enter Your Password"
+            required
+          />
+          <button
+            type="button"
+            // onClick={togglePasswordVisibility}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-semibold"
+          >
+            {/* {showPassword ? "Hide" : "Show"} */}
+          </button>
+        </div>
+
+        {/* Role Selection */}
+        <div className="flex gap-4 items-center">
+          <div className="flex items-center gap-2">
+            <input
+              type="radio"
+              value="student"
+              id="student-option"
+              // checked={input.role === "student"}
+              // onChange={handleChange}
+              name="role"
+              required
+              className="role-input"
+            />
+            <label htmlFor="student-option" className="role-label">
+              Student
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="radio"
+              value="recruiter"
+              id="recruiter-option"
+              // checked={input.role === "recruiter"}
+              // onChange={handleChange}
+              name="role"
+              required
+              className="role-input"
+            />
+            <label htmlFor="recruiter-option" className="role-label">
+              Recruiter
+            </label>
+          </div>
+        </div>
+
+        {/* Profile Image */}
+        <div className="flex gap-2 items-center">
+          <Label>Profile</Label>
+          <Input
+            type="file"
+            // onChange={handleFile}
+            accept="image/*"
+            className="cursor-pointer"
+          />
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          className="mt-4 w-full my-4"
+          // disabled={isSubmitting}
+        >
+          {/* {isSubmitting ? "Submitting..." : "Sign Up"} */}
+        </Button>
+
+        {/* Login Link */}
+        <span>
+          Already have an Account?{" "}
+          <Link to="/login" className="text-blue-600">
+            Login
+          </Link>
+        </span>
+      </form>
+    </div>
+  );
+}
+
+

@@ -1,0 +1,306 @@
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
+// import { Button } from "@/components/ui/button";
+// import { Avatar, AvatarImage } from "@/components/ui/avatar";
+// import { LogOut, User2 } from "lucide-react";
+// import Link from "react-dom"
+// export default function NavBar() {
+//   const user = false; // Changed to lowercase 'user' for consistency
+//   return (
+//     <div className="bg-white p-4 ">
+//       <div className="flex items-center justify-between mx-auto max-w-7xl h-16">
+//         <div className="">
+//           <h1 className="text-2xl font-bold">
+//             Job <span className="text-red-600">Portal</span>
+//           </h1>
+//         </div>
+//         <div className="flex gap-5 items-center">
+//           <ul className="flex gap-12 font-medium items-center">
+//             <li>Home</li>
+//             <li>Jobs</li>
+//             <li>Browse</li>
+//           </ul>
+//           {!user ? (
+//             <div className="flex gap-2 items-center">
+//               <Link to="/login"><Button variant="outline">Login</Button></Link>
+//               <Button className="bg-black">SignUp</Button> {/* Fixed the typo: "SingUp" -> "SignUp" */}
+//             </div>
+//           ) : (
+//             <Popover>
+//               <PopoverTrigger asChild>
+//                 <Avatar className="cursor-pointer">
+//                   <AvatarImage src="https://github.com/shadcn.png" />
+//                 </Avatar>
+//               </PopoverTrigger>
+//               <PopoverContent className="w-80">
+//                 <div className="flex gap-2 space-y-2">
+//                   <Avatar className="cursor-pointer">
+//                     <AvatarImage src="https://github.com/shadcn.png" />
+//                   </Avatar>
+//                   <div className="">
+//                     <h4 className="font-medium">Roshan Chauhan</h4>
+//                     <p className="text-sm text-muted-foreground">
+//                       Lorem ipsum dolor sit
+//                     </p>
+//                   </div>
+//                 </div>
+//                 <div className="flex flex-col text-gray-600">
+//                   <div className="flex w-fit items-center gap-2 cursor-pointer">
+//                     <User2 className="text-[200px] text-green-600 w-fit" />
+//                     <Button variant="link">View Profile</Button>
+//                   </div>
+//                   <div className="flex w-fit items-center gap-2 cursor-pointer">
+//                     <LogOut className="text-[200px] text-red-600" />
+//                     <Button variant="link">Logout</Button>
+//                   </div>
+//                 </div>
+//               </PopoverContent>
+//             </Popover>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { LogOut, User2 } from "lucide-react";
+// Use react-router-dom's Link in a React app
+import { Link } from "react-router-dom"; // Correct import for React Router
+
+export default function NavBar() {
+  const user = false; // Changed to lowercase 'user' for consistency
+
+  return (
+    <div className="bg-white p-4 ">
+      <div className="flex items-center justify-between mx-auto max-w-7xl h-16">
+        <div className="">
+          <h1 className="text-2xl font-bold">
+            Job <span className="text-red-600">Portal</span>
+          </h1>
+        </div>
+        <div className="flex gap-5 items-center">
+          <ul className="flex gap-12 font-medium items-center">
+            <Link to={"/"}>
+              <li>Home</li>
+            </Link>
+            <li>Jobs</li>
+            <li>Browse</li>
+          </ul>
+          {!user ? (
+            <div className="flex gap-2 items-center">
+              <Link to="/login">
+                <Button variant="outline">Login</Button>
+              </Link>
+              <Link to="/signup">
+                <Button className="bg-black">SignUp</Button>
+              </Link>{" "}
+              {/* Fixed typo: "SingUp" -> "SignUp" */}
+            </div>
+          ) : (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Avatar className="cursor-pointer">
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                </Avatar>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="flex gap-2 space-y-2">
+                  <Avatar className="cursor-pointer">
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                  </Avatar>
+                  <div className="">
+                    <h4 className="font-medium">Roshan Chauhan</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Lorem ipsum dolor sit
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col text-gray-600">
+                  <div className="flex w-fit items-center gap-2 cursor-pointer">
+                    <User2 className="text-[200px] text-green-600 w-fit" />
+                    <Button variant="link">View Profile</Button>
+                  </div>
+                  <div className="flex w-fit items-center gap-2 cursor-pointer">
+                    <LogOut className="text-[200px] text-red-600" />
+                    <Button variant="link">Logout</Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+********************************************************************************************************************************
+
+
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  phoneNumber: { type: String, required: true, unique: true },
+  AlterPhoneNumber: { type: String, required: true, unique: true },
+});
+
+// Pre-save hook to hash password before saving user
+userSchema.pre("save", async function (next) {
+  if (this.isModified('password') || this.isNew) { // Only hash password if it was modified or it's a new user
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+// Method to compare entered password with stored hashed password
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  if (this.password && enteredPassword) {
+    return bcrypt.compare(enteredPassword, this.password);
+  }
+  return false;
+};
+
+const User = mongoose.model("User", userSchema);
+
+export default User;
+
+
+import User from "../models/UserSchema"
+import express from "express"
+cosnt router = express.Router();
+
+router.post("/register", )
+
+
+
+
+import React, { useState, useEffect } from "react";
+import "./App.css";
+
+const App = () => {
+  // State to track whether dark mode is enabled
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Toggle Dark Mode
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
+  // Use useEffect to apply the dark mode to the body class
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [isDarkMode]);
+
+  return (
+    <div className="App">
+      <h1>Dark Mode Example</h1>
+      <button onClick={toggleDarkMode}>
+        {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+      </button>
+    </div>
+  );
+};
+
+export default App;
+
+
+
+
+
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+
+const Login = () => {
+  // State for email, password, loading and error messages
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true); // Set loading state to true when the form is submitted
+    setError(""); // Reset any previous errors
+
+    try {
+      const { data } = await axios.post("/api/auth/login", { email, password });
+      login(data.user); // Set user details in context
+      alert("Login successful!"); // You can replace this with a redirect or another UI change
+    } catch (error) {
+      setError("Login failed! Please check your credentials."); // Set error message if login fails
+    } finally {
+      setLoading(false); // Reset loading state when the request is complete
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ maxWidth: "400px", margin: "0 auto" }}>
+      <h2>Login</h2>
+
+      {/* Email input field */}
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        disabled={loading} // Disable input when loading
+      />
+
+      {/* Password input field */}
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        disabled={loading} // Disable input when loading
+      />
+
+      {/* Error message */}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      {/* Submit button */}
+      <button type="submit" disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
+      </button>
+
+      {/* Optionally, add a link to the registration page */}
+      <p>
+        Don't have an account? <a href="/register">Sign Up</a>
+      </p>
+    </form>
+  );
+};
+
+export default Login;
